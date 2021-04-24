@@ -6,44 +6,74 @@
 // gonna get two values back from useState
 // similar to assigning two variables from Python, with extra deserializing
 // : for objects, = when passing something
-// ...props <- this is used for deconstructing
+// ...props <- this is deconstructing an object
+// same as
+// value={color_props.value}
+// setter={color_props.setter}
+// slidercolor={color_props.sliderColor}
+
+// maps
+// for each value in colors, execute logic in this function
+// return a list of outputs
+
+// {} used to invoke JSX code in HTML
+// example: // doesn't work in HTML, but works in JSX
 
 import React from 'react';
+import CoolSlider, { CoolSliderProps } from '../CoolSlider/CoolSlider.react';
 
-const props = {
-    orientation: 'vertical',
-    min: 0
+export enum COLORS {
+    RED='#e01000',
+    BLUE='#20d020',
+    GREEN='#0040f0'
 }
 
-const Background = () => {
+export interface BackgroundProps {
+    setColorString: Function;
+}
+
+const Background = (props: BackgroundProps): JSX.Element => {
     
     const [red, setRed] = React.useState(0);
     const [blue, setBlue] = React.useState(0); 
     const [green, setGreen] = React.useState(0);
 
-    const colors = [(red, setRed, 0),
-                    (blue, setBlue, 1),
-                    (green, setGreen, 2)]
+    const colors: CoolSliderProps[] = [
+        {value: red, setter: setRed, sliderColor: COLORS.RED},
+        {value: blue, setter: setBlue, sliderColor: COLORS.BLUE},
+        {value: green, setter: setGreen, sliderColor: COLORS.GREEN}
+    ]
+
+    // useEffect: when anything in the dependency list is affected, do this
+    // don't set state inside a render, do it when actions happen or inf loop happens
+    // useEffect is an action
+    React.useEffect(
+        () => {
+            props.setColorString(`rgb(${red}, ${blue}, ${green})`);
+        },
+        [red, blue, green]
+    );
+    
 
     return (
         <div className="Parent-background-sliders">
             <div className="Background-sliders">
-                // for each value in colors, execute logic in this function
-                // return a list of outputs
                 {
-                    colors.map((color) => ( 
+                    colors.map((color_props: CoolSliderProps) => ( 
                         <CoolSlider
-                            // orientation="vertical"
-                            // min={0}
-                            {...props} // like unpacking a dictionary
-                            value={color[0]}
-                            setter={color[1]}
-                            sliderColor={color[2]}
+                            {...color_props}
+                            // value={color_props.value}
+                            // setter={color_props.setter}
+                            // sliderColor={color_props.sliderColor}
+                            // { page_bg.style.background = "red" }
                         />
                     ))
                 }
             </div>
+            
         </div>
     );
     
 }
+
+export default Background;

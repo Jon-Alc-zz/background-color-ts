@@ -1,5 +1,6 @@
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/core/Slider';
+import { COLORS } from '../Background/Background.react';
 
 /*
 Notes:
@@ -41,26 +42,38 @@ const CustomSlider = withStyles({
     },
 })(Slider)
 
-const RedSlider = withStyles({
-    root: {
-        color: '#e01000',
-    },
-})(CustomSlider)
-
-const GreenSlider = withStyles({
-    root: {
-        color: '#20d020',
-    },
-})(CustomSlider)
-
-const BlueSlider = withStyles({
-    root: {
-        color: '#0040f0',
-    },
-})(CustomSlider)
-
-const color_sliders = [RedSlider, BlueSlider, GreenSlider]
-
-const CoolSlider = (props) => {
-    return color_sliders
+export interface CoolSliderProps {
+    sliderColor: COLORS;
+    value: number;
+    setter: Function;
 }
+
+const CoolSlider = (props: CoolSliderProps): JSX.Element => {
+
+    // called every render, like update
+    // render is called when states or props change; why it's called React
+    const CustomSlider2 = withStyles({
+        root: {
+            color: props.sliderColor,
+        },
+    })(CustomSlider)
+
+    return (
+        <div className="slider">
+            <CustomSlider2
+                key={props.value}
+                orientation={"vertical"}
+                min={0}
+                max={255}
+                step={1}
+                defaultValue={props.value}
+                onChangeCommitted={async (event, new_value) => {
+                    props.setter(new_value)
+                }}
+                valueLabelDisplay={"auto"}
+            />
+        </div>
+    );
+}
+
+export default CoolSlider;
